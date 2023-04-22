@@ -1,60 +1,58 @@
-#include "gen.h"
+#include "assembly.h"
 
 void _read (FILE*);
-unsigned _bytesUsed (unsigned*, const char);
+unsigned _highestBytePos (unsigned*, char);
 
 int main (int argc, char** argv) {
-    FILE* bfile = fopen(argv[1], "r");
-    if (!bfile) {
-        puts("u: This compiler as any other one needs a file to compile!");
+    FILE* file = fopen(argv[1], "r");
+    if (!file) {
+        puts("u: No file given or file given as argument does not exist!");
         return 0;
     }
 
-    gen_init();
-    _read(bfile);
+    _read(file);
     return 0;
 }
 
-void _read (FILE* bfile)
+void _read (FILE* file)
 {
-    char mnemonic;
-    unsigned bytes = 1;
+    char inst;
+    unsigned bytepos = 1;
 
-    while((mnemonic = fgetc(bfile)) != EOF) {
-        switch (mnemonic) {
+    while ((inst = fgetc(file)) != EOF) {
+        switch (inst) {
             case '+': case '-':
-            case '[': case ']':
-            case '.': case ',': {
-                gen_newToken(mnemonic);
+            case ',': case '.':
+            case '[': case ']': {
+                asm_newToken(inst);
                 break;
             }
-
             case '<': case '>': {
-                gen_newToken(mnemonic);
-                _bytesUsed(&bytes, mnemonic);
+                _highestBytePos(&bytepos, inst);
+                asm_newToken(inst);
                 break;
             }
         }
     }
 
-    fclose(bfile);
-    gen_genFile(_bytesUsed(NULL, 0));
+    fclose(file);
+    asm_gen(_highestBytePos(NULL, 0));
 }
 
-unsigned _bytesUsed (unsigned* bytepos, const char kase)
+unsigned _highestBytePos (unsigned* bytepos, char kaz)
 {
-    static unsigned highestbyte_pos = 1;
+    static unsigned highestpos = 1;
     if (!bytepos)
-        return highestbyte_pos;
+        return highestpos;
 
-    if (kase == '<') {
+    if (kaz == '<') {
         if ((*bytepos - 1))
             *bytepos -= 1;
         return 0;
     }
 
-    if (*bytepos == highestbyte_pos)
-        highestbyte_pos++;
+    if (*bytepos == highestpos)
+        highestpos++;
     *bytepos += 1;
     return 0;
 }

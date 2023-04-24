@@ -7,6 +7,7 @@ enum bfTokenType {
     BF_DEC_TYPE = '-',
     BF_NXT_TYPE = '>',
     BF_PRV_TYPE = '<',
+    BF_OUT_TYPE = '.',
     BF_UNK_TYPE = '?'
 };
 

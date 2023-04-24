@@ -68,6 +68,8 @@ void _readTokens (FILE* outf)
             label_manipulateMem(currbody, __tokens[i].times, type);
         if (type == BF_NXT_TYPE || type == BF_PRV_TYPE)
             label_goThrough(currbody, __tokens[i].times, type);
+        if (type == BF_OUT_TYPE)
+            label_print(currbody, __tokens[i].times);
     }
 
     fprintf(outf, labels[0].temp->data, labels[0].body->data);

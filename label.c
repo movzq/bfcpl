@@ -11,10 +11,11 @@ struct Label label_main ()
     const char* temp = "main:\n"
                        "\tpushq \t %%rbp\n"
                        "\tmovq  \t %%rsp, %%rbp\n"
+                       "\tsubq  \t $16, %%rsp\n"
                        "\tmovq  \t $mems, -8(%%rbp)\n"
                        "%s"
                        "\tmovl \t $0, %%eax\n"
-                       "\tpopq \t %%rbp\n"
+                       "\tleave\n"
                        "\tret\n";
     ustr_append(lbl.temp, temp);
     return lbl;
@@ -46,4 +47,15 @@ void label_goThrough (struct ustr* body, unsigned times, char kaz)
     snprintf(write, len, code, (kaz == '<') ? "subq" : "addq", times);
     ustr_append(body, write);
     free(write);
+}
+
+void label_print (struct ustr* body, unsigned times)
+{
+    const char* code = "\tmovq   \t -8(%rbp), %rax\n"
+                       "\tmovzbl \t (%rax), %eax\n"
+                       "\tmovsbl \t %al, %eax\n"
+                       "\tmovl   \t %eax, %edi\n"
+                       "\tcall   \t putchar\n";
+    ustr_append(body, code);
+    if (--times) label_print(body, times);
 }

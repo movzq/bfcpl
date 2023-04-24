@@ -11,5 +11,6 @@ struct Label {
 struct Label label_main ();
 void label_manipulateMem (struct ustr*, unsigned, char);
 void label_goThrough (struct ustr*, unsigned, char);
+void label_print (struct ustr*, unsigned);
 
 #endif

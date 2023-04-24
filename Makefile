@@ -5,4 +5,8 @@ main: bfcpl.o assembly.o ustring/ustring.o label.o
 	./bfc tets
 
 rm:
-	rm *.o out.s a.out
+	rm *.o out.s a.out bfc
+
+asm:
+	cc out.s
+	./a.out

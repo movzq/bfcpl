@@ -32,9 +32,18 @@ void label_manipulateMem (struct ustr* body, unsigned times, char kaz)
     size_t len = strlen(code) + 10;
     char* write = (char*) malloc(len);
 
-    snprintf(write, len, code, (kaz == '<') ? "subl" : "addl", times);
+    snprintf(write, len, code, (kaz == '-') ? "subl" : "addl", times);
     ustr_append(body, write);
+    free(write);
+}
 
-    printf("CODE: %s\n", write);
+void label_goThrough (struct ustr* body, unsigned times, char kaz)
+{
+    const char* code = "\t%s \t $%d, -8(%rbp)\n";
+    size_t len = strlen(code) + 10;
+    char* write = (char*) malloc(len);
+
+    snprintf(write, len, code, (kaz == '<') ? "subq" : "addq", times);
+    ustr_append(body, write);
     free(write);
 }

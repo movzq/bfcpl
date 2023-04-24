@@ -3,7 +3,7 @@
 static struct bfToken* __tokens;
 static size_t __numtokens;
 
-void _readTokens ();
+void _readTokens (FILE*);
 
 void asm_init ()
 {
@@ -47,11 +47,11 @@ void asm_gen (unsigned bytes)
     fprintf(outfile, "\t.zero %d\n", bytes);
     fprintf(outfile, ".text\n");
 
-    _readTokens();
+    _readTokens(outfile);
     fclose(outfile);
 }
 
-void _readTokens ()
+void _readTokens (FILE* outf)
 {
     /* The first label will be for all code into the main function
      * and the second is for loops (If there's) and when that loop
@@ -64,11 +64,14 @@ void _readTokens ()
     for (size_t i = 0; i < __numtokens; i++) {
         const enum bfTokenType type = __tokens[i].type;
 
-        if (type == BF_INC_TYPE || type == BF_DEC_TYPE) {
+        if (type == BF_INC_TYPE || type == BF_DEC_TYPE)
             label_manipulateMem(currbody, __tokens[i].times, type);
-        }
+        if (type == BF_NXT_TYPE || type == BF_PRV_TYPE)
+            label_goThrough(currbody, __tokens[i].times, type);
     }
 
-
+    fprintf(outf, labels[0].temp->data, labels[0].body->data);
+    ustr_kill(labels[0].temp);
+    ustr_kill(labels[0].body);
     free(labels);
 }

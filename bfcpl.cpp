@@ -4,7 +4,7 @@ void _read (FILE*);
 
 int main (int argc, char** argv) {
     if (argc == 1) {
-        puts("u: This compiler as any other one needs another one.");
+        puts("u: This compiler as any other one needs an argument.");
         return 0;
     }
 

@@ -8,6 +8,8 @@ namespace {
 
     std::vector<bfToken> __tokens;
     std::vector<Label> __labels;
+
+
 }
 
 namespace Assembly {
@@ -17,7 +19,7 @@ namespace Assembly {
             .sample = "main:\n"
                       "\tpushq \t %rbp\n"
                       "\tmovq \t %rsp, %rbp\n"
-                      "\tsubq \t $16, %rsp\n"
+                      "\tsubq \t $16, %rsp\n" // XXX: Can be improved.
                       "\tmovq \t $mems, -8(%rbp)\n"
                       "%s"
                       "\tleave\n"
@@ -29,10 +31,8 @@ namespace Assembly {
     {
         const std::string perform = (type == bfTokenType::inc) ? "\taddl" : "\tsubl";
         *body += "\tmovq \t -8(%rbp), %rax\n"
-                 "\tmovzbl \t (%rax), %eax\n" +
-                 perform + " \t $" + std::to_string(times) + ", %eax\n"
-                 "\tmovl \t %eax, %edx\n"
-                 "\tmovq \t -8(%rbp), %rax\n"
+                 "\tmovzbl \t (%rax), %edx\n" +
+                 perform + " \t $" + std::to_string(times) + ", %edx\n"
                  "\tmovb \t %dl, (%rax)\n";
     }
 
@@ -48,15 +48,41 @@ namespace Assembly {
                  "\tmovzbl \t (%rax), %edi\n"
                  "\tcall \t putchar\n";
 
-        // could be improved (Gotta check).
+        // XXX: could be improved (Gotta check).
         if (--times) Assembly::writePrint(body, times);
+    }
+
+    Label writeNewLoop (std::string* body)
+    {
+        static int numloops = 0;
+        const std::string labelnum = std::to_string(numloops++);
+
+        *body += "\tcall \t LC" + std::to_string(numloops) + "\n";
+        return Label {
+            .sample = "LC" + std::to_string(numloops) + ":\n"
+                      "\tmovq \t -8(%rbp), %rax\n"
+                      "\tmovzbl \t (%rax), %r9d\n"
+                      "\ttest \t %r9d, %r9d\n"
+                      "\tjne \t LB" + std::to_string(numloops) + "\n"
+                      "\tret\n"
+                      "LB" + std::to_string(numloops) + ":\n"
+                      "%s"
+                      "\tjmp LC" + std::to_string(numloops) + "\n"
+                      "\tret\n"
+        };
+    }
+
+    void writeThisLabel (FILE* outfile)
+    {
+        fprintf(outfile, __labels.back().sample.c_str(), __labels.back().body.c_str());
+        __labels.pop_back();
     }
 }
 
 void asm_newToken (const bfTokenType type)
 {
     static bfTokenType prevtype = bfTokenType::unk;
-    if (prevtype == type) {
+    if (prevtype == type && type != bfTokenType::blo && type != bfTokenType::elo) {
         __tokens.back().times++;
         return;
     }
@@ -76,12 +102,12 @@ void asm_generate ()
 
     fprintf(asmfile, ".globl mems\n");
     fprintf(asmfile, ".type mems, @object\n");
-    fprintf(asmfile, ".size mems, 30000\n");
+    fprintf(asmfile, ".size mems, 30000\n"); // XXX: Can be improved.
 
     fprintf(asmfile, ".bss\n");
     fprintf(asmfile, "\t.align 1\n");
     fprintf(asmfile, "\tmems:\n");
-    fprintf(asmfile, "\t.zero 30000\n");
+    fprintf(asmfile, "\t.zero 30000\n"); // XXX: Can be improved.
     fprintf(asmfile, ".text\n");
 
     Assembly::writeMain();
@@ -98,13 +124,19 @@ void asm_generate ()
 
         else if (type == bfTokenType::out)
             Assembly::writePrint(currbody, token.times);
+
+        else if (type == bfTokenType::elo && __labels.size() >= 2) {
+            Assembly::writeThisLabel(asmfile);
+            currbody = &__labels.back().body;
+        }
+
+        else if (type == bfTokenType::blo) {
+            __labels.push_back(Assembly::writeNewLoop(currbody));
+            currbody = &__labels.back().body;
+        }
     }
 
-    fprintf(
-        asmfile,
-        __labels.back().sample.c_str(),
-        __labels.back().body.c_str()
-    );
+    Assembly::writeThisLabel(asmfile);
     fclose(asmfile);
 }
 

@@ -11,5 +11,6 @@ bfcpl.
     Resoruces:
     * http://brainfuck.org/
 
-    COMPILER IS NOT DONE AT ALL YET, SOME PROGRAMS DOES NOT COMPILE CORRECTLY AND MAY
-    SOME IMPROVMENTS CAN BE DONE.
+    Some programs needs too much memory, if you want to use more or less bytes put the
+    number of bytes you want after the filename to compile, the number by default is
+    30'000.

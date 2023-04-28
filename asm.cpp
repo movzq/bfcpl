@@ -8,8 +8,6 @@ namespace {
 
     std::vector<bfToken> __tokens;
     std::vector<Label> __labels;
-
-
 }
 
 namespace Assembly {
@@ -48,7 +46,6 @@ namespace Assembly {
                  "\tmovzbl \t (%rax), %edi\n"
                  "\tcall \t putchar\n";
 
-        // XXX: could be improved (Gotta check).
         if (--times) Assembly::writePrint(body, times);
     }
 
@@ -60,7 +57,6 @@ namespace Assembly {
                  "\tmovq \t -8(%rbp), %rax\n"
                  "\tmovb \t %dl, (%rax)\n";
 
-        // XXX: could be improved (Gotta check).
         if (--times) Assembly::writeInput(body, times);
     }
 

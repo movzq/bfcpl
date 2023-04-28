@@ -5,4 +5,8 @@ main: bfcpl.o asm.o
 	./bfc test
 
 rm:
-	rm *.o bfc
+	rm *.o bfc out.s a.out
+
+asm:
+	cc out.s
+	./a.out

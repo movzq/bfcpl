@@ -1,0 +1,15 @@
+bfcpl.
+    Very powerful brainfuck compiler with only one modification since i don't get at all
+    how loops works in brainfuck; Some loops are used until the pointer reaches the zero
+    value, others until the enter key is pressed, so to solve that problem two types of
+    loops were implemented. Use "[]" when want to do a loop until the value be zero, use
+    "()" until the enter key is pressed.
+
+    All brainfuck codes were taken from Daniel B Cristofani's page, thank you so much
+    for your bf code and those amazing programs.
+
+    Resoruces:
+    * http://brainfuck.org/
+
+    COMPILER IS NOT DONE AT ALL YET, SOME PROGRAMS DOES NOT COMPILE CORRECTLY AND MAY
+    SOME IMPROVMENTS CAN BE DONE.

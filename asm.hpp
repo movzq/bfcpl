@@ -7,7 +7,8 @@ enum class bfTokenType  {
     inc = '+', dec = '-',
     prv = '<', nxt = '>',
     out = '.', inp = ',',
-    blo = '[', elo = ']',
+    b_loopu0 = '[', e_loopu0 = ']',
+    b_loopuc = '(', e_loopuc = ')',
     unk = '?'
 };
 
@@ -17,6 +18,6 @@ typedef struct {
 } bfToken;
 
 void asm_newToken (const bfTokenType);
-void asm_generate ();
+void asm_generate (unsigned);
 
 #endif
